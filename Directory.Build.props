@@ -1,0 +1,13 @@
+<Project>
+    <PropertyGroup>
+        <!-- summary is not migrated from project.json, but you can use the <Description> property for that if needed. -->
+        <PackageTags>f#, fsharp</PackageTags>
+        <PackageProjectUrl>https://github.com/gsvgit/TestProj2020</PackageProjectUrl>
+        <PackageLicenseUrl>https://github.com/gsvgit/TestProj2020/blob/master/LICENSE.md</PackageLicenseUrl>
+        <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+        <RepositoryType>git</RepositoryType>
+        <Authors>gsvgit</Authors>
+        <RepositoryUrl>https://github.com/gsvgit/TestProj2020</RepositoryUrl>
+        <!-- owners is not supported in MSBuild -->
+    </PropertyGroup>
+</Project>
