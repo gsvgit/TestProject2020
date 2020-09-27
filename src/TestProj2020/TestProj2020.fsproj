@@ -18,6 +18,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="FSharpIntro.fs" />
+    <Compile Include="Fib.fs" />
     <None Include="App.config" />
     <Compile Include="Main.fs" />
   </ItemGroup>

@@ -225,18 +225,28 @@ var assemblies = [
     "name": "TestProj2020",
     "classes": [
       { "name": "System.AssemblyVersionInformation", "rp": "TestProj2020_AssemblyVersionInformation.htm", "cl": 0, "ucl": 0, "cal": 0, "tl": 0, "ct": "MethodCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [], "bch": [], "hc": [] },
-      { "name": "TestProj2020.AssemblyInfo", "rp": "TestProj2020_AssemblyInfo.htm", "cl": 0, "ucl": 22, "cal": 22, "tl": 88, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [], "bch": [], "hc": [] },
-      { "name": "TestProj2020.Main", "rp": "TestProj2020_Main.htm", "cl": 0, "ucl": 18, "cal": 18, "tl": 88, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 12, "lch": [], "bch": [], "hc": [] },
-      { "name": "TestProj2020.Say", "rp": "TestProj2020_Say.htm", "cl": 2, "ucl": 4, "cal": 6, "tl": 88, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [], "bch": [], "hc": [] },
+      { "name": "TestProj2020.Fib", "rp": "TestProj2020_Fib.htm", "cl": 0, "ucl": 30, "cal": 30, "tl": 66, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 28, "lch": [], "bch": [], "hc": [] },
+      { "name": "TestProj2020.FSharpIntro", "rp": "TestProj2020_FSharpIntro.htm", "cl": 3, "ucl": 16, "cal": 19, "tl": 47, "ct": "LineCoverage", "mc": "-", "cb": 2, "tb": 16, "lch": [], "bch": [], "hc": [] },
+      { "name": "TestProj2020.Main", "rp": "TestProj2020_Main.htm", "cl": 0, "ucl": 10, "cal": 10, "tl": 23, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 2, "lch": [], "bch": [], "hc": [] },
     ]},
 ];
 
 var historicCoverageExecutionTimes = [];
 
 var riskHotspotMetrics = [
+      { "name": "Cyclomatic complexity", "explanationUrl": "https://en.wikipedia.org/wiki/Cyclomatic_complexity" },
+      { "name": "NPath complexity", "explanationUrl": "https://modess.io/npath-complexity-cyclomatic-complexity-explained" },
+      { "name": "Crap Score", "explanationUrl": "https://googletesting.blogspot.de/2011/02/this-code-is-crap.html" },
 ];
 
 var riskHotspots = [
+  {
+    "assembly": "TestProj2020", "class": "TestProj2020.Fib", "reportPath": "TestProj2020_Fib.htm", "methodName": "System.Int32[][] TestProj2020.Fib::multiplyMatrices(System.Int32[][],System.Int32[][])", "methodShortName": "multiplyMatrices(...)", "fileIndex": 0, "line": 21,
+    "metrics": [
+      { "value": 9, "exceeded": false },
+      { "value": 256, "exceeded": true },
+      { "value": 0, "exceeded": false },
+    ]},
 ];
 
 var branchCoverageAvailable = true;

@@ -9,6 +9,8 @@ nuget Microsoft.NET.Test.Sdk 15.7.2
 nuget altcover ~> 6
 nuget Packaging.Targets 0.1.155
 
+nuget FsCheck
+nuget Expecto.FsCheck
 // [ FAKE GROUP ]
 group Build
     storage: none
