@@ -8,10 +8,18 @@
         <Compile Include="AssemblyInfo.fs" />
         <Compile Include="Tests.fs" />
         <Compile Include="FSharpIntreTests.fs" />
+        <Compile Include="Lecture4Tests.fs" />
         <Compile Include="Main.fs" />
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="../../src/TestProj2020/TestProj2020.fsproj" />
+        <ProjectReference Include="..\..\src\Lecture4\Lecture4.fsproj" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="TestArray1.txt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <Content Include="TestF1.txt" />
     </ItemGroup>
     <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

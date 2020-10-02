@@ -5,10 +5,12 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>Lecture4</AssemblyName>
+    <RootNamespace>Lecture4</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
-    <Title>TestProj2020</Title>
-    <Description>TestProj2020 does the thing!</Description>
+    <Title>Lecture4</Title>
+    <Description>Stuff for lecture 4</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <Optimize>true</Optimize>
@@ -17,8 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="FSharpIntro.fs" />
-    <Compile Include="Fib.fs" />
+    <Compile Include="Sorts.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
