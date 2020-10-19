@@ -1,7 +1,7 @@
 module TestProj2020.Sorts
 
 let qSort lst =
-    printfn "%A" lst
+
     let split opCompare lst =
         let rec go lst part1 part2 =
             match lst with

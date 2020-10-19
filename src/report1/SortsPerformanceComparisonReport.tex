@@ -1,0 +1,48 @@
+%\documentclass[a4paper,12pt]{article}  % standard LaTeX, 12 point type
+\documentclass[12pt, a4paper, table]{article}
+
+\usepackage{algpseudocode}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+
+\usepackage{geometry}
+\usepackage{amsfonts,latexsym}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc} % Кодировка
+\usepackage[english,russian]{babel} % Многоязычность
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{dsfont}
+\usepackage{multicol}
+\usetikzlibrary{fit,calc,automata,positioning}
+
+\setlength{\parskip}{5pt plus 2pt minus 1pt}
+%\setlength{\parindent}{0pt}
+
+\usepackage{color}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{ucs}
+
+\title{Экспериментальный анализ производительности алгоритмов сортировки}
+\author{Семён Григорьев}
+\date{\today}
+
+\begin{document}
+\maketitle
+\newpage
+\tableofcontents
+\newpage
+
+\input{Introduction}
+\input{ImplementationDetails}
+\input{Evaluation}
+\input{Conclusion}
+
+\bibliographystyle{abbrv}
+\bibliography{SortsPerformanceComparisonReport}
+
+\end{document}

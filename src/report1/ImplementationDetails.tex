@@ -1,0 +1,37 @@
+\section{Детали реализации}
+
+Для сравнения со стандартной сортировкой на языке программирования F\# была реализована классическая сортировака Хоара для типа \verb|List|. 
+Код сортировки приведён в листинге~\ref{lst:qSort}.
+
+
+\begin{algorithm}[h]
+\floatname{algorithm}{Listing}
+\caption{Сортировка Хоара на языке программирования F\#}
+\label{lst:qSort}
+\begin{verbatim}
+let qSort lst =
+
+    let split opCompare lst =
+        let rec go lst part1 part2 =
+            match lst with
+            | [] -> part1, part2
+            | hd :: tl ->
+                if opCompare hd
+                then go tl (hd :: part1) part2
+                else go tl part1 (hd :: part2)
+        go lst [] []
+
+    let rec go lst =
+        match lst with
+        | []  -> []
+        | [x] -> [x]
+        | hd :: tl ->
+            let left,right = split ((>) hd) tl
+            (go left) @ hd :: (go right)
+
+    go lst
+\end{verbatim}
+\end{algorithm}
+
+Обратим внимание, что данная реализация использует в качестве разделющего элемента текущую голову списка.
+Кроме этого, операция разделения списка на два реализована в виде отдельной функции \verb|split|, параметризованной условием разделения (\verb|opCompare|).
