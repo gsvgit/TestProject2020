@@ -19,10 +19,51 @@
 Результаты замеров времени приведены на рисунке~\ref{fig:list_sort}.
 Использован стандартный violin plot с указанием медианного значения времени для каждой длины.
 
+
 \begin{figure}
-	\begin{center}
-	   \includegraphics[width=0.95\textwidth]{data/ListSort.pdf}
-	   \caption{Сравнение производительности системной сортировки и реализованной вручную сортировки Хоара для списка}
-	   \label{fig:list_sort}
-	\end{center}	
+	\centering
+	\begin{subfigure}[b]{0.48\textwidth}
+       \centering
+	   \includegraphics[width=0.99\textwidth]{data/ListSort5ReleaseGC.pdf}
+	   \caption{5 замеров}
+	   \label{fig:list_sort_5}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.48\textwidth}
+       \centering
+	   \includegraphics[width=0.99\textwidth]{data/ListSort10ReleaseGC.pdf}
+	   \caption{10 замеров}
+	   \label{fig:list_sort_10}
+	\end{subfigure}
+	\caption{Сравнение произвоительности сортировок списка \texttt{List.sort} и \texttt{qSort} при разном количестве повторов одного замера}
+	\label{fig:list_sort}	
+\end{figure}
+
+
+\begin{figure}
+	\centering
+    \includegraphics[width=0.99\textwidth]{data/ListSystemSort5ReleaseGCCharging2.pdf}
+	\caption{Сравнение произвоительности сортировок списка \texttt{List.sort} при разных режимах сборки и запуска}
+	\label{fig:list_sort_system}	
+\end{figure}
+
+
+
+
+
+\begin{figure}
+	\centering
+	\begin{subfigure}[b]{0.48\textwidth}
+       \centering
+	   \includegraphics[width=0.99\textwidth]{data/ListCustomSort5ReleaseGCCharging.pdf}
+	   \caption{Активное использоване ноутбука во времмя замеров}
+	   \label{fig:list_sort_5_trash}
+	\end{subfigure}~
+	\begin{subfigure}[b]{0.48\textwidth}
+       \centering
+	   \includegraphics[width=0.99\textwidth]{data/ListCustomSort5ReleaseGCCharging2.pdf}
+	   \caption{Минимизация посторонней активности}
+	   \label{fig:list_sort_5_clean}
+	\end{subfigure}
+	\caption{Зависимость качества графика от посторонней активности во время замеров}
+	\label{fig:quality_of_measurements}	
 \end{figure}

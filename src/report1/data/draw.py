@@ -8,9 +8,9 @@ def add_label(violin, label):
     color = violin["bodies"][0].get_facecolor().flatten()
     labels.append((mpatches.Patch(color=color), label))
 
-def draw(file, name):
+def draw(file, name, axs):
 	df = pd.read_csv(file)
-	data = [[d[1][0], d[1][1:]] for d in df.iterrows()][0::5]
+	data = [[d[1][0], d[1][1:]] for d in df.iterrows()]#[0::5]
 
 	plt.ioff()
 
@@ -24,21 +24,65 @@ def draw(file, name):
 	   showmedians=True),
  	   name)
 
-customListData = 'timingsCustomListSortOut.csv' 
-systemListData = 'timingsSystemListSortOut.csv' 
 
-fig = plt.figure()
-axs = plt.axes()
+def drawFiles (filesWithLegend, out):	
+	fig = plt.figure()
+	axs = plt.axes()
 
-axs.yaxis.grid(True)
-axs.set_xlabel('Длинна входного списка (* 1000)')
-axs.set_ylabel('Время сортировки (миллисекунды)')
+	axs.yaxis.grid(True)
+	axs.set_xlabel('Длина входного списка (* 1000)')
+	axs.set_ylabel('Время сортировки (миллисекунды)')
 
-draw(customListData,"qSort")
+	for (file,legend) in filesWithLegend:
+		draw(file, legend, axs)
 
-draw(systemListData, "List.sort")
+	plt.legend(*zip(*labels), loc=2)
 
-plt.legend(*zip(*labels), loc=2)
+	plt.savefig(out)
+	plt.close(fig)
 
-plt.savefig("ListSort.pdf")
-plt.close(fig)
+
+drawFiles([('timingsCustomListSortOut.csv', "qSort"), 
+	('timingsSystemListSortOut.csv', "List.sort")], 
+	"ListSort5ReleaseGC.pdf")
+
+labels = []
+drawFiles([('timingsCustomListSortOut10_release.csv', "qSort"), 
+	('timingsSystemListSortOut10_release.csv', "List.sort")], 
+	"ListSort10ReleaseGC.pdf")
+
+labels = []
+drawFiles([('timingsCustomListSortOut5_debug.csv', "qSort"), 
+	('timingsSystemListSortOut5_debug.csv', "List.sort")], 
+	"ListSort5DebugGC.pdf")
+
+labels = []
+drawFiles([('timingsCustomListSortOut5_release_noGC.csv', "qSort"), 
+	('timingsSystemListSortOut5_release_noGC.csv', "List.sort")], 
+	"ListSort5ReleaseNoGC.pdf")
+
+labels = []
+drawFiles([('timingsCustomListSortOut5_release_GC_charging.csv', "qSort"), 
+	('timingsSystemListSortOut5_release_GC_charging.csv', "List.sort")],
+	"ListSort5ReleaseGCCharging.pdf")
+
+
+labels = []
+drawFiles([('timingsCustomListSortOut5_release_GC_charging.csv', "release, GC, charging"), 
+	('timingsCustomListSortOut5_release_noGC.csv', "release, no GC, charging"), 
+	('timingsCustomListSortOut5_debug.csv', "debug, GC, charging")], 
+	"ListCustomSort5ReleaseGCCharging.pdf")
+
+
+labels = []
+drawFiles([('timingsCustomListSortOut5_release_GC_charging_2.csv', "release, GC, charging"),
+    ('timingsCustomListSortOut5_release_noGC.csv', "release, no GC, no charging"), 
+    ('timingsCustomListSortOut5_debug.csv', "debug, GC, charging")], 
+    "ListCustomSort5ReleaseGCCharging2.pdf")
+
+
+labels = []
+drawFiles([('timingsSystemListSortOut5_release_GC_charging_2.csv', "release, GC, charging"), 
+	('timingsSystemListSortOut5_release_noGC.csv', "release, no GC, no charging"), 
+	('timingsSystemListSortOut5_debug.csv', "debug, GC, charging")],
+	 "ListSystemSort5ReleaseGCCharging2.pdf")
