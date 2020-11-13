@@ -5,21 +5,22 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <AssemblyName>Lecture8</AssemblyName>
+    <RootNamespace>Lecture8</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
-    <Title>TestProj2020</Title>
-    <Description>TestProj2020 does the thing!</Description>
+    <Title>Lecture8</Title>
+    <Description>Stuff for lecture 8</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <Optimize>true</Optimize>
     <Tailcalls>true</Tailcalls>
-    <IsPackable>true</IsPackable>
     
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="FSharpIntro.fs" />
-    <Compile Include="Fib.fs" />
+    <Compile Include="MyList.fs" />
+    <Compile Include="MyBinTree.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

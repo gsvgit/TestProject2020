@@ -268,3 +268,5 @@ coverage.*.xml
 .paket/paket
 
 *.aux
+
+*.csv#
