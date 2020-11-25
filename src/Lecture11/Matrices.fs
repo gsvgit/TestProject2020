@@ -61,3 +61,27 @@ let multBoolSparseParallel2 mtx1 mtx2 =
 
 let elementwiseAddBoolSparse mtx1 mtx2 =
     mtx1 @ mtx2 |> Set.ofList |> List.ofSeq
+
+let cls mtx counter opMult opAdd =
+    let count r =
+        let mutable cnt = 0
+        r |> Array2D.iter (fun i -> if counter i then cnt <- cnt + 1)
+        cnt
+
+    let mutable cls = mtx
+    let mutable _continue = true
+    while _continue do
+        let prev = count cls
+        let r =
+            multiply
+                cls
+                cls
+                opMult
+                opAdd
+
+        elementwiseAddInPlace cls r opAdd
+        let cur = count cls
+        //printfn "prev = %A cur = %A" prev cur
+        if prev = cur
+        then _continue <- false
+    cls

@@ -14,8 +14,10 @@ module Main =
         |> printfn "Recognition with NFA result: %A"
 
         let mtxNFA = nfaToMatrixNFA nfa
-        accept mtxNFA input
+        let eclsNFA = epsClosure mtxNFA
+        accept eclsNFA input
         |> printfn "Recognition with matrices: %A"
+        printfn "------------------------"
 
 
     [<EntryPoint>]
@@ -43,7 +45,7 @@ module Main =
         let input5 = ['1']
         let input6 = ['0'; '1']
 
-(*
+
         processRegexp re3 input3
         processRegexp re3 input4
         processRegexp re3 input5
@@ -54,16 +56,16 @@ module Main =
 
         processRegexp re1 input1
         processRegexp re1 input2
-*)
+
         let re4 = parseRegexpFromString "(1|0)*"
-(*
+
         processRegexp re4 input1
         processRegexp re4 input2
-*)
+
         let numRe = parseRegexpFromString "(1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*.(0|1|2|3|4|5|6|7|8|9)*(1|2|3|4|5|6|7|8|9)"
 
-        printfn "%A" numRe
+        //printfn "%A" numRe
 
-        processRegexp numRe ['1';'2';'.';'0';'4';'2']
+        //processRegexp numRe ['1';'2';'.';'0';'4';'2']
 
         0
