@@ -1,13 +1,17 @@
 module Matrices
+open System.Collections.Generic
+open System.Threading.Tasks
 
 let multiply (m1:'t [,]) (m2:'t [,]) opMult opPlus =
     if m1.GetLength 1 = m2.GetLength 0
     then
         let res = Array2D.zeroCreate (m1.GetLength 0) (m2.GetLength 1)
-        for i in 0..m1.GetLength 0 - 1 do
+        Parallel.For(0, m1.GetLength 0, fun i ->
+        //for i in 0..m1.GetLength 0 - 1 do
             for j in 0..m2.GetLength 1 - 1 do
                 for k in 0..m1.GetLength 1 - 1 do
                     res.[i,j] <- opPlus res.[i,j] (opMult m1.[i,k] m2.[k,j])
+                    )
         res
     else failwith "Incorrect size of input matrices."
 
@@ -31,36 +35,41 @@ let toBooleanSparse (mtx:_[,]) =
     |> Array2D.mapi (fun i j x -> if x then Some (i,j) else None)
     |> Seq.cast<_>
     |> Seq.choose id
-    |> List.ofSeq
+    |> Array.ofSeq
 
 let multBoolSparse mtx1 mtx2 =
-    [
+    [|
         for (i,j) in mtx1 do
             for (k,l) in mtx2 do
                 if k = j then i,l
-    ] |> List.distinct
+    |] |> Array.distinct
 
 let multBoolSparseParallel mtx1 mtx2 =
-    Array.ofList mtx1
+    mtx1
     |> Array.Parallel.map
         (fun (i,j) ->
-            [for (k,l) in mtx2 do
-                if k = j then i,l])
-    |> List.concat |> List.distinct
+            [|for (k,l) in mtx2 do
+                 if k = j then i,l|])
+    |> Array.concat |> Array.distinct
 
 
 let multBoolSparseParallel2 mtx1 mtx2 =
-    let mtx2 = Array.ofList mtx2
-    Array.ofList mtx1
+    let res = new HashSet<_>()
+    mtx1
     |> Array.Parallel.map
         (fun (i,j) ->
-            Array.Parallel.choose (fun (k,l) -> if k = j then Some (i,l) else None) mtx2
-            |> List.ofArray)
-    |> List.concat |> List.distinct
+            let res = new HashSet<_>()
+            for (k,l) in mtx2 do
+                if k = j then res.Add((i,l))|> ignore
+            res)
+    |> Array.iter (fun s -> res.UnionWith s)
+    res |> Array.ofSeq
 
 
-let elementwiseAddBoolSparse mtx1 mtx2 =
-    mtx1 @ mtx2 |> Set.ofList |> List.ofSeq
+let elementwiseAddBoolSparse (mtx1:array<_>) mtx2 =
+    let res = new HashSet<_>(mtx1)
+    res.UnionWith mtx2
+    res |> Array.ofSeq
 
 let cls mtx counter opMult opAdd =
     let count r =

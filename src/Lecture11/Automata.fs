@@ -28,9 +28,7 @@ let seqToAtm (input: list<_>) =
     let mtx =
         let mtx = Array2D.init (input.Length + 1) (input.Length + 1) (fun _ _ -> new HashSet<_>())
         for i in 0 .. input.Length - 1 do
-            mtx.[i, i].Add (Eps) |> ignore
             mtx.[i, i + 1].Add (Smb (input.[i])) |> ignore
-        mtx.[input.Length, input.Length].Add (Eps) |> ignore
         mtx
     new MatrixNFA<_>(0, new HashSet<_>([input.Length]), mtx)
 
@@ -68,17 +66,17 @@ let toDot (nfa:MatrixNFA<_>) outFile =
 
 
 let epsClosure (atm:MatrixNFA<_>) =
-    let count (r:HashSet<_>[,]) =
+    let inline count (r:HashSet<_>[,]) =
         let mutable cnt = 0
         r |> Array2D.iter (fun i -> if i.Count > 0 then cnt <- cnt + 1)
         cnt
 
-    let addSets (s1:HashSet<_>) s2 =
+    let inline addSets (s1:HashSet<_>) s2 =
         let r = if s1 = null then new HashSet<_>() else new HashSet<_>(s1)
         r.UnionWith s2
         r
 
-    let multSets s1 s2 =
+    let inline multSets s1 s2 =
         let r = new HashSet<_> ()
         for x in s1 do
             for y in s2 do
@@ -90,7 +88,7 @@ let epsClosure (atm:MatrixNFA<_>) =
     let eCls = cls atm.Transitions (fun i -> i.Count > 0) multSets addSets
 
     let intermediateResult = new MatrixNFA<_> (atm.StartState, atm.FinalState, eCls)
-    toDot intermediateResult "inter.dot"
+    //toDot intermediateResult "inter.dot"
     let newFinals = new HashSet<_>()
 
     eCls |> Array2D.iteri (fun i j x -> if x.Contains Eps && atm.FinalState.Contains j then newFinals.Add i |> ignore)
@@ -98,7 +96,7 @@ let epsClosure (atm:MatrixNFA<_>) =
     eCls |> Array2D.iteri (fun i j x -> x.Remove Eps |> ignore)
 
     let res = new MatrixNFA<_> (atm.StartState, atm.FinalState, eCls)
-    toDot res "resECls.dot"
+    //toDot res "resECls.dot"
 
     let boolMtx = res.Transitions |> Array2D.map (fun x -> x.Count > 0)
 
@@ -108,7 +106,7 @@ let epsClosure (atm:MatrixNFA<_>) =
 
     reachable |> Array2D.iteri (fun i j x -> if x && i = atm.StartState then reachableFromStart.Add j |> ignore)
 
-    reachableFromStart.Add atm.StartState
+    reachableFromStart.Add atm.StartState |> ignore
 
     let newStateToOldState = new Dictionary<_,_>()
 
@@ -129,7 +127,7 @@ let epsClosure (atm:MatrixNFA<_>) =
               |> fun x -> new HashSet<_>(x)
             , newTransitions)
 
-    toDot res "res.dot"
+    //toDot res "res.dot"
 
     res
 
@@ -146,27 +144,45 @@ let accept (nfa:MatrixNFA<_>) (input: list<_>) =
                     s1 * (nfa.Transitions.GetLength 0) + s2
         ]
 
-    toDot nfa2 "nfa2.dot"
-    toDot (new MatrixNFA<_>(newStartState, new HashSet<_>(newFinalStates), intersection)) "outIntersection.dot"
+   // toDot nfa2 "nfa2.dot"
+   // toDot (new MatrixNFA<_>(newStartState, new HashSet<_>(newFinalStates), intersection)) "outIntersection.dot"
 
     let projected = intersection |> Array2D.map (fun s -> s.Count > 0)
 
     let reachability = cls projected (fun i -> i) (&&) (||)
-        (*
+
+    newFinalStates
+    |> List.fold (fun a s -> a || reachability.[newStartState,s]) false
+
+
+let acceptWithSparseMatrix (nfa:MatrixNFA<_>) (input: list<_>) =
+    let nfa2 = seqToAtm input
+    let intersection = kron nfa2.Transitions nfa.Transitions (fun s1 s2 -> let res = new HashSet<_>(s1) in res.IntersectWith s2; res)
+
+    let newStartState = nfa2.StartState * (nfa.Transitions.GetLength 0) + nfa.StartState
+    let newFinalStates =
+        [
+            for s1 in nfa2.FinalState do
+                for s2 in nfa.FinalState do
+                    s1 * (nfa.Transitions.GetLength 0) + s2
+        ]
+
+   // toDot nfa2 "nfa2.dot"
+   // toDot (new MatrixNFA<_>(newStartState, new HashSet<_>(newFinalStates), intersection)) "outIntersection.dot"
+
+    let projected = intersection |> Array2D.map (fun s -> s.Count > 0)
+
+    let reachability =
         let mutable res = toBooleanSparse projected
         let mutable _continue = true
         while _continue do
-            let prev = List.length res
-            let r = multBoolSparseParallel res res
+            let prev = Array.length res
+            let r = multBoolSparseParallel2 res res
             res <- elementwiseAddBoolSparse res r
-            let cur = List.length res
-            printfn "prev = %A cur = %A" prev cur
+            let cur = Array.length res
+            //printfn "prev = %A cur = %A" prev cur
             if prev = cur
             then _continue <- false
         res
 
-    List.exists (fun (i,j) -> newStartState = i && List.contains j newFinalStates) reachability
-    *)
-    newFinalStates
-    |> List.fold (fun a s -> a || reachability.[newStartState,s]) false
-
+    Array.exists (fun (i,j) -> newStartState = i && List.contains j newFinalStates) reachability

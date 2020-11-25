@@ -10,13 +10,14 @@ module Main =
     let processRegexp regexp input =
         let nfa = regexpToNFA regexp
 
-        recognizeNFA nfa input
-        |> printfn "Recognition with NFA result: %A"
+        let res, time = Lecture5.PerfTests.time (fun _ -> recognizeNFA nfa input)
+
+        printfn "Recognition with graph NFA: %A in %A milliseconds" res time
 
         let mtxNFA = nfaToMatrixNFA nfa
         let eclsNFA = epsClosure mtxNFA
-        accept eclsNFA input
-        |> printfn "Recognition with matrices: %A"
+        let res, time = Lecture5.PerfTests.time (fun _ -> acceptWithSparseMatrix eclsNFA input)
+        printfn "Recognition with matrix NFA: %A in %A milliseconds" res time
         printfn "------------------------"
 
 
@@ -64,8 +65,7 @@ module Main =
 
         let numRe = parseRegexpFromString "(1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*.(0|1|2|3|4|5|6|7|8|9)*(1|2|3|4|5|6|7|8|9)"
 
-        //printfn "%A" numRe
-
-        //processRegexp numRe ['1';'2';'.';'0';'4';'2']
+        processRegexp numRe ['1';'2';'.';'0';'4';'2']
+        processRegexp numRe ['3';'1';'2';'.';'0';'4';'2';'6']
 
         0
