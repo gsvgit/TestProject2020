@@ -5,6 +5,7 @@ open Automata
 module Main =
     open Matrices
     open Regexp
+    open RegexpParser
 
     let processRegexp regexp input =
         let nfa = regexpToNFA regexp
@@ -42,7 +43,7 @@ module Main =
         let input5 = ['1']
         let input6 = ['0'; '1']
 
-
+(*
         processRegexp re3 input3
         processRegexp re3 input4
         processRegexp re3 input5
@@ -53,5 +54,16 @@ module Main =
 
         processRegexp re1 input1
         processRegexp re1 input2
+*)
+        let re4 = parseRegexpFromString "(1|0)*"
+(*
+        processRegexp re4 input1
+        processRegexp re4 input2
+*)
+        let numRe = parseRegexpFromString "(1|2|3|4|5|6|7|8|9)(0|1|2|3|4|5|6|7|8|9)*.(0|1|2|3|4|5|6|7|8|9)*(1|2|3|4|5|6|7|8|9)"
+
+        printfn "%A" numRe
+
+        processRegexp numRe ['1';'2';'.';'0';'4';'2']
 
         0

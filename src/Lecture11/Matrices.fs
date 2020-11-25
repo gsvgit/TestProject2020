@@ -21,8 +21,43 @@ let kron (m1:'t [,]) (m2:'t [,]) opMult =
             res.[i,j] <- opMult m1.[i / m2.GetLength 0, j / m2.GetLength 1 ] m2.[i % m2.GetLength 0, j % m2.GetLength 0]
     res
 
-
 let elementwiseAddInPlace (m1:'t [,]) (m2:'t [,]) opAdd =
     if m1.GetLength 0 = m2.GetLength 0 && m1.GetLength 1 = m2.GetLength 1
     then Array2D.iteri (fun i j x -> m1.[i,j] <- opAdd x m1.[i,j]) m2
     else failwith "Incorrect size of input matrices."
+
+let toBooleanSparse (mtx:_[,]) =
+    mtx
+    |> Array2D.mapi (fun i j x -> if x then Some (i,j) else None)
+    |> Seq.cast<_>
+    |> Seq.choose id
+    |> List.ofSeq
+
+let multBoolSparse mtx1 mtx2 =
+    [
+        for (i,j) in mtx1 do
+            for (k,l) in mtx2 do
+                if k = j then i,l
+    ] |> List.distinct
+
+let multBoolSparseParallel mtx1 mtx2 =
+    Array.ofList mtx1
+    |> Array.Parallel.map
+        (fun (i,j) ->
+            [for (k,l) in mtx2 do
+                if k = j then i,l])
+    |> List.concat |> List.distinct
+
+
+let multBoolSparseParallel2 mtx1 mtx2 =
+    let mtx2 = Array.ofList mtx2
+    Array.ofList mtx1
+    |> Array.Parallel.map
+        (fun (i,j) ->
+            Array.Parallel.choose (fun (k,l) -> if k = j then Some (i,l) else None) mtx2
+            |> List.ofArray)
+    |> List.concat |> List.distinct
+
+
+let elementwiseAddBoolSparse mtx1 mtx2 =
+    mtx1 @ mtx2 |> Set.ofList |> List.ofSeq

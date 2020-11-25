@@ -18,13 +18,25 @@
     
   </PropertyGroup>
   <ItemGroup>
+    <FsYacc Include="CalcParser.fsy">
+      <OtherFlags>--module CalcParser</OtherFlags>
+    </FsYacc>
+    <FsLex Include="CalcLexer.fsl">
+      <OtherFlags>--module CalcLexer --unicode</OtherFlags>
+    </FsLex>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Matrices.fs" />
     <Compile Include="Automata.fs" />
+    <Compile Include="CalcParser.fs" />
+    <Compile Include="CalcLexer.fs" />
+    <Compile Include="RegexpParser.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Lecture10\Lecture10.fsproj" />
+  </ItemGroup>
+<ItemGroup>
+    <PackageReference Include="FsLexYacc" Version="10.0.0" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

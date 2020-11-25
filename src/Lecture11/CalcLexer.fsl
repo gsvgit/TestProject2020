@@ -1,0 +1,31 @@
+{
+
+// Opens methods related to fslex.exe
+open FSharp.Text.Lexing
+
+let newline (lexbuf: LexBuffer<_>) =
+  lexbuf.StartPos <- lexbuf.StartPos.NextLine
+
+}
+
+// Regular expressions
+let whitespace = [' ' '\t' ]
+let newline = ('\n' | '\r' '\n')
+
+let smb = ['a'-'z' '0'-'9' '-' '.']
+
+rule tokenStream = parse
+// --------------------------
+| smb 		{ CalcParser.SMB(char (lexbuf.Lexeme).[0]) }
+// --------------------------
+| whitespace	{ tokenStream lexbuf }
+| newline	{ newline lexbuf; tokenStream lexbuf }
+//---------------------------
+| '(' {CalcParser.LBR}
+| ')' {CalcParser.RBR}
+| '*' {CalcParser.STAR}
+| '|' {CalcParser.ALT}
+// --------------------------
+| _    		{ failwith ("ParseError" + LexBuffer<_>.LexemeString lexbuf) }
+| eof   	{ CalcParser.EOF }
+

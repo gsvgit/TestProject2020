@@ -64,6 +64,10 @@ let toDot (nfa:MatrixNFA<_>) outFile =
 
     System.IO.File.WriteAllLines (outFile, header @ content @ footer)
 
+(*
+let epsClosure (atm:MatrixNFA<_>) =
+    let cls =
+*)
 
 let accept (nfa:MatrixNFA<_>) (input: list<_>) =
     let nfa2 = seqToAtm input
@@ -82,6 +86,7 @@ let accept (nfa:MatrixNFA<_>) (input: list<_>) =
             let mutable cnt = 0
             Array2D.iter (fun i -> if i then cnt <- cnt + 1) r
             cnt
+        (*
         let res = projected
         let mutable _continue = true
         while _continue do
@@ -89,10 +94,22 @@ let accept (nfa:MatrixNFA<_>) (input: list<_>) =
             let r = multiply res res (&&) (||)
             elementwiseAddInPlace res r (||)
             let cur = count res
+            printfn "prev = %A cur = %A" prev cur
             if prev = cur
             then _continue <- false
-
+        *)
+        let mutable res = toBooleanSparse projected
+        let mutable _continue = true
+        while _continue do
+            let prev = List.length res
+            let r = multBoolSparseParallel res res
+            res <- elementwiseAddBoolSparse res r
+            let cur = List.length res
+            printfn "prev = %A cur = %A" prev cur
+            if prev = cur
+            then _continue <- false
         res
 
-    reachability.[newStartState, newFinalState]
+    List.contains (newStartState, newFinalState) reachability
+    //reachability.[newStartState, newFinalState]
 

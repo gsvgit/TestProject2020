@@ -11,6 +11,7 @@ nuget Packaging.Targets 0.1.155
 
 nuget FsCheck
 nuget Expecto.FsCheck
+nuget FsLexYacc
 // [ FAKE GROUP ]
 group Build
     storage: none
