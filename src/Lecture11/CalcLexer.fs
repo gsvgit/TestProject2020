@@ -55,7 +55,7 @@ and tokenStream  lexbuf =
           )
   | 2 -> ( 
 # 22 "CalcLexer.fsl"
-                           newline lexbuf; tokenStream lexbuf 
+                           tokenStream lexbuf 
 # 59 "CalcLexer.fs"
           )
   | 3 -> ( 

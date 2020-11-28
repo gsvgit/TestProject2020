@@ -19,7 +19,7 @@ rule tokenStream = parse
 | smb 		{ CalcParser.SMB(char (lexbuf.Lexeme).[0]) }
 // --------------------------
 | whitespace	{ tokenStream lexbuf }
-| newline	{ newline lexbuf; tokenStream lexbuf }
+| newline	{ tokenStream lexbuf }
 //---------------------------
 | '(' {CalcParser.LBR}
 | ')' {CalcParser.RBR}

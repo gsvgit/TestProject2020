@@ -3,7 +3,7 @@ module CalcParser
 #nowarn "64";; // turn off warnings that type variables used in production annotations are instantiated to concrete type
 open FSharp.Text.Lexing
 open FSharp.Text.Parsing.ParseHelpers
-# 0 "d"
+# 0 " "
 
 # 8 "CalcParser.fs"
 // This type is the type of tokens accepted by the parser
@@ -120,10 +120,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 21 "CalcParser.fsy"
+# 20 "CalcParser.fsy"
                                         _1
                    )
-# 21 "CalcParser.fsy"
+# 20 "CalcParser.fsy"
                  :  Regexp.Regexp<char> ));
 # 128 "CalcParser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -131,10 +131,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 23 "CalcParser.fsy"
+# 22 "CalcParser.fsy"
                                   _1
                    )
-# 23 "CalcParser.fsy"
+# 22 "CalcParser.fsy"
                  : 'regexp));
 # 139 "CalcParser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -143,10 +143,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 23 "CalcParser.fsy"
+# 22 "CalcParser.fsy"
                                                         Regexp.Regexp.Alt(_1,_3)
                    )
-# 23 "CalcParser.fsy"
+# 22 "CalcParser.fsy"
                  : 'regexp));
 # 151 "CalcParser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -154,10 +154,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 25 "CalcParser.fsy"
+# 24 "CalcParser.fsy"
                                     _1
                    )
-# 25 "CalcParser.fsy"
+# 24 "CalcParser.fsy"
                  : 'seq));
 # 162 "CalcParser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -166,10 +166,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 25 "CalcParser.fsy"
+# 24 "CalcParser.fsy"
                                                         Regexp.Regexp.Seq(_1,_2)
                    )
-# 25 "CalcParser.fsy"
+# 24 "CalcParser.fsy"
                  : 'seq));
 # 174 "CalcParser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -177,10 +177,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 27 "CalcParser.fsy"
+# 26 "CalcParser.fsy"
                                     Regexp.Regexp.RSmb(_1)
                    )
-# 27 "CalcParser.fsy"
+# 26 "CalcParser.fsy"
                  : 'seq_elem));
 # 185 "CalcParser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -188,10 +188,10 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 27 "CalcParser.fsy"
+# 26 "CalcParser.fsy"
                                                                               _2
                    )
-# 27 "CalcParser.fsy"
+# 26 "CalcParser.fsy"
                  : 'seq_elem));
 # 196 "CalcParser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
@@ -199,20 +199,20 @@ let _fsyacc_reductions ()  =    [|
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 27 "CalcParser.fsy"
+# 26 "CalcParser.fsy"
                                                                                                    Regexp.Regexp.Star(_1)
                    )
-# 27 "CalcParser.fsy"
+# 26 "CalcParser.fsy"
                  : 'seq_elem));
 # 207 "CalcParser.fs"
         (fun (parseState : FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
                    (
-# 29 "CalcParser.fsy"
+# 28 "CalcParser.fsy"
                                1
                    )
-# 29 "CalcParser.fsy"
+# 28 "CalcParser.fsy"
                  : 'eof));
 |]
 # 218 "CalcParser.fs"

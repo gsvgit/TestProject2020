@@ -8,21 +8,27 @@ open Matrices
 
 [<Struct>]
 type MatrixNFA<'t> =
-    val StartState : int
+    val StartState : HashSet<int>
     val FinalState : HashSet<int>
     val Transitions : HashSet<NFASmb<'t>>[,]
     new (start, final, transitions) =
         {StartState = start; FinalState = final; Transitions = transitions}
 
-
 let nfaToMatrixNFA (nfa:NFA<_>) =
     let mtx =
-        let maxState = nfa.Transitions |> List.fold (fun a (s,_,f) -> max (max s a) f) 0
-        let mtx = Array2D.init (maxState + 1) (maxState + 1) (fun _ _ -> new HashSet<_>())
+        let maxState =
+           nfa.Transitions
+           |> List.fold (fun a (s,_,f) -> max (max s a) f) 0
+        let mtx =
+            Array2D.init
+                (maxState + 1)
+                (maxState + 1)
+                (fun _ _ -> new HashSet<_>())
+
         nfa.Transitions
         |> List.iter (fun (s,l,f) -> mtx.[s,f].Add l |> ignore)
         mtx
-    new MatrixNFA<_> (nfa.StartState, new HashSet<_>([nfa.FinalState]), mtx)
+    new MatrixNFA<_> (new HashSet<_>([nfa.StartState]), new HashSet<_>([nfa.FinalState]), mtx)
 
 let seqToAtm (input: list<_>) =
     let mtx =
@@ -30,7 +36,7 @@ let seqToAtm (input: list<_>) =
         for i in 0 .. input.Length - 1 do
             mtx.[i, i + 1].Add (Smb (input.[i])) |> ignore
         mtx
-    new MatrixNFA<_>(0, new HashSet<_>([input.Length]), mtx)
+    new MatrixNFA<_>(new HashSet<_>([0]), new HashSet<_>([input.Length]), mtx)
 
 let toDot (nfa:MatrixNFA<_>) outFile =
     let header =
@@ -39,7 +45,8 @@ let toDot (nfa:MatrixNFA<_>) outFile =
             "{"
             "rankdir = LR"
             "node [shape = circle];"
-            sprintf "%A[shape = circle, label = \"%A_Start\"]" nfa.StartState nfa.StartState
+            for s in nfa.StartState do
+                sprintf "%A[shape = circle, label = \"%A_Start\"]" s s
         ]
 
     let footer =
@@ -88,15 +95,17 @@ let epsClosure (atm:MatrixNFA<_>) =
     let eCls = cls atm.Transitions (fun i -> i.Count > 0) multSets addSets
 
     let intermediateResult = new MatrixNFA<_> (atm.StartState, atm.FinalState, eCls)
-    //toDot intermediateResult "inter.dot"
+    //toDot intermediateResult "eClsStep1.dot"
+
     let newFinals = new HashSet<_>()
 
     eCls |> Array2D.iteri (fun i j x -> if x.Contains Eps && atm.FinalState.Contains j then newFinals.Add i |> ignore)
     newFinals.UnionWith atm.FinalState
+
     eCls |> Array2D.iteri (fun i j x -> x.Remove Eps |> ignore)
 
-    let res = new MatrixNFA<_> (atm.StartState, atm.FinalState, eCls)
-    //toDot res "resECls.dot"
+    let res = new MatrixNFA<_> (atm.StartState, newFinals, eCls)
+    //toDot res "eClsWithoutEpsEdges.dot"
 
     let boolMtx = res.Transitions |> Array2D.map (fun x -> x.Count > 0)
 
@@ -104,9 +113,12 @@ let epsClosure (atm:MatrixNFA<_>) =
 
     let reachableFromStart = new HashSet<_>()
 
-    reachable |> Array2D.iteri (fun i j x -> if x && i = atm.StartState then reachableFromStart.Add j |> ignore)
+    reachable
+    |> Array2D.iteri (fun i j x ->
+                                if x && atm.StartState.Contains i
+                                then reachableFromStart.Add j |> ignore)
 
-    reachableFromStart.Add atm.StartState |> ignore
+    reachableFromStart.UnionWith atm.StartState |> ignore
 
     let newStateToOldState = new Dictionary<_,_>()
 
@@ -120,14 +132,16 @@ let epsClosure (atm:MatrixNFA<_>) =
 
     let res =
         new MatrixNFA<_>(
-            (newStateToOldState |> Seq.find (fun x -> x.Value = atm.StartState)).Key
+            newStateToOldState |> Seq.filter (fun x -> atm.StartState.Contains x.Value)
+            |> Seq.map (fun kvp -> kvp.Key)
+            |> fun s -> new HashSet<_>(s)
             , newStateToOldState
               |> Seq.filter (fun x -> newFinals.Contains x.Value)
               |> Seq.map (fun kvp -> kvp.Key)
               |> fun x -> new HashSet<_>(x)
             , newTransitions)
 
-    //toDot res "res.dot"
+    toDot res "eClsFinalResult.dot"
 
     res
 
@@ -136,7 +150,13 @@ let accept (nfa:MatrixNFA<_>) (input: list<_>) =
     let nfa2 = seqToAtm input
     let intersection = kron nfa2.Transitions nfa.Transitions (fun s1 s2 -> let res = new HashSet<_>(s1) in res.IntersectWith s2; res)
 
-    let newStartState = nfa2.StartState * (nfa.Transitions.GetLength 0) + nfa.StartState
+    let newStartState =
+        [ for s1 in nfa2.StartState do
+              for s2 in nfa.StartState do
+                s1 * (nfa.Transitions.GetLength 0) + s2
+        ]
+        |> fun s -> new HashSet<_>(s)
+
     let newFinalStates =
         [
             for s1 in nfa2.FinalState do
@@ -145,16 +165,52 @@ let accept (nfa:MatrixNFA<_>) (input: list<_>) =
         ]
 
    // toDot nfa2 "nfa2.dot"
-   // toDot (new MatrixNFA<_>(newStartState, new HashSet<_>(newFinalStates), intersection)) "outIntersection.dot"
+    toDot (new MatrixNFA<_>(newStartState, new HashSet<_>(newFinalStates), intersection)) "outIntersection.dot"
 
     let projected = intersection |> Array2D.map (fun s -> s.Count > 0)
 
     let reachability = cls projected (fun i -> i) (&&) (||)
 
     newFinalStates
-    |> List.fold (fun a s -> a || reachability.[newStartState,s]) false
+    |> List.fold (
+        fun a s -> a || (Seq.fold (fun a2 s2 -> a2 || reachability.[s2, s]) false newStartState) ) false
 
 
+let findAll (nfa: MatrixNFA<_>) (input: list<_>) =
+    let nfa2 = seqToAtm input
+    let intersection = kron nfa2.Transitions nfa.Transitions (fun s1 s2 -> let res = new HashSet<_>(s1) in res.IntersectWith s2; res)
+
+    let newStartState =
+        [
+          for s1 in 0 .. nfa2.Transitions.GetLength 0 - 1 do
+            for s2 in nfa.StartState do
+                s1 * (nfa.Transitions.GetLength 0) + s2
+        ]
+        |> fun s -> new HashSet<_>(s)
+
+    let newFinalStates =
+        [
+            for s1 in 0 .. nfa2.Transitions.GetLength 0 - 1 do
+                for s2 in nfa.FinalState do
+                    yield s1 * (nfa.Transitions.GetLength 0) + s2
+        ]
+
+    toDot (new MatrixNFA<_>(newStartState, new HashSet<_>(newFinalStates), intersection)) "outfindAll.dot"
+
+    let projected = intersection |> Array2D.map (fun s -> s.Count > 0)
+
+    let reachability = cls projected (fun i -> i) (&&) (||)
+
+    [
+      for s1 in newFinalStates do
+          for s2 in newStartState do
+              if reachability.[s2, s1] || s1 = s2
+              then yield (s2 / nfa.Transitions.GetLength 0, s1 / nfa.Transitions.GetLength 0)
+    ]
+
+
+
+(*
 let acceptWithSparseMatrix (nfa:MatrixNFA<_>) (input: list<_>) =
     let nfa2 = seqToAtm input
     let intersection = kron nfa2.Transitions nfa.Transitions (fun s1 s2 -> let res = new HashSet<_>(s1) in res.IntersectWith s2; res)
@@ -176,13 +232,14 @@ let acceptWithSparseMatrix (nfa:MatrixNFA<_>) (input: list<_>) =
         let mutable res = toBooleanSparse projected
         let mutable _continue = true
         while _continue do
-            let prev = Array.length res
+            let prev = res.Count
             let r = multBoolSparseParallel2 res res
-            res <- elementwiseAddBoolSparse res r
-            let cur = Array.length res
+            elementwiseAddBoolSparseInplace res r
+            let cur = res.Count
             //printfn "prev = %A cur = %A" prev cur
             if prev = cur
             then _continue <- false
         res
 
-    Array.exists (fun (i,j) -> newStartState = i && List.contains j newFinalStates) reachability
+    Seq.exists (fun (i,j) -> newStartState = i && List.contains j newFinalStates) reachability
+*)

@@ -1,6 +1,7 @@
 module Matrices
 open System.Collections.Generic
 open System.Threading.Tasks
+open System.Threading.Tasks
 
 let multiply (m1:'t [,]) (m2:'t [,]) opMult opPlus =
     if m1.GetLength 1 = m2.GetLength 0
@@ -35,7 +36,7 @@ let toBooleanSparse (mtx:_[,]) =
     |> Array2D.mapi (fun i j x -> if x then Some (i,j) else None)
     |> Seq.cast<_>
     |> Seq.choose id
-    |> Array.ofSeq
+    |> fun x -> new HashSet<_>(x)
 
 let multBoolSparse mtx1 mtx2 =
     [|
@@ -53,23 +54,22 @@ let multBoolSparseParallel mtx1 mtx2 =
     |> Array.concat |> Array.distinct
 
 
-let multBoolSparseParallel2 mtx1 mtx2 =
-    let res = new HashSet<_>()
-    mtx1
-    |> Array.Parallel.map
-        (fun (i,j) ->
-            let res = new HashSet<_>()
+let multBoolSparseParallel2 (mtx1:HashSet<_>) mtx2 =
+    let res = new System.Collections.Concurrent.ConcurrentBag <_>()
+    Parallel.ForEach(mtx1, fun (i,j) ->
+            let r = new HashSet<_>()
             for (k,l) in mtx2 do
-                if k = j then res.Add((i,l))|> ignore
-            res)
-    |> Array.iter (fun s -> res.UnionWith s)
-    res |> Array.ofSeq
+                if k = j then r.Add((i,l))|> ignore
+            res.Add r)
+    //|> Array.iter (fun s -> res.UnionWith s)
+    let r = new HashSet<_>()
+    res//.ToArray()
+    |> Seq.iter(fun x -> r.UnionWith x)
+    r
+    //|> Array.ofSeq
 
-
-let elementwiseAddBoolSparse (mtx1:array<_>) mtx2 =
-    let res = new HashSet<_>(mtx1)
-    res.UnionWith mtx2
-    res |> Array.ofSeq
+let elementwiseAddBoolSparseInplace (mtx1:HashSet<_>) mtx2 =
+    mtx1.UnionWith mtx2
 
 let cls mtx counter opMult opAdd =
     let count r =
