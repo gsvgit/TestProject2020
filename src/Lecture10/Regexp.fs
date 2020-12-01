@@ -3,14 +3,18 @@ module Regexp
 open Automata
 
 type Regexp<'t> =
+    | REps
     | RSmb of 't
     | Seq of Regexp<'t> * Regexp<'t>
     | Alt of Regexp<'t> * Regexp<'t>
     | Star of Regexp<'t>
+    | Intersect of Regexp<'t> * Regexp<'t>
 
 let regexpToNFA regexp =
     let rec _go curFreeState curRegexp =
         match curRegexp with
+        | REps -> new NFA<_> (curFreeState, curFreeState + 1,
+                                [ (curFreeState, Eps, curFreeState + 1) ])
         | RSmb s -> new NFA<_> (curFreeState, curFreeState + 1,
                                 [ (curFreeState, Smb(s), curFreeState + 1) ])
         | Alt (l, r) ->

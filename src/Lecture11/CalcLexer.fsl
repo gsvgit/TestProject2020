@@ -6,13 +6,17 @@ open FSharp.Text.Lexing
 let newline (lexbuf: LexBuffer<_>) =
   lexbuf.StartPos <- lexbuf.StartPos.NextLine
 
+let lexeme = LexBuffer<_>.LexemeString
 }
 
 // Regular expressions
 let whitespace = [' ' '\t' ]
 let newline = ('\n' | '\r' '\n')
 
-let smb = ['a'-'z' '0'-'9' '-' '.']
+let smb = ['a'-'z' 'A'-'Z' '0'-'9' '-' '.']
+
+let str = '"' smb* '"'
+let vname = '[' ['a'-'z' 'A'-'Z']+ ['0'-'9']* ']'
 
 rule tokenStream = parse
 // --------------------------
@@ -25,7 +29,16 @@ rule tokenStream = parse
 | ')' {CalcParser.RBR}
 | '*' {CalcParser.STAR}
 | '|' {CalcParser.ALT}
+| '?' {CalcParser.OPT}
+| '&' {CalcParser.AMP}
+| '=' {CalcParser.EQ}
+| vname {CalcParser.VNAME(lexeme lexbuf)}
+| "let" {CalcParser.KW_LET}
+| "print" {CalcParser.KW_PRINT}
+| "findAll" {CalcParser.KW_FIND_ALL}
+| "isAcceptable" {CalcParser.KW_IS_ACCEPTABLE}
+| str {CalcParser.STR(lexeme lexbuf)}
 // --------------------------
-| _    		{ failwith ("ParseError" + LexBuffer<_>.LexemeString lexbuf) }
+| _    		{ failwith ("Lexer error. Unexpected symbol: " + LexBuffer<_>.LexemeString lexbuf) }
 | eof   	{ CalcParser.EOF }
 

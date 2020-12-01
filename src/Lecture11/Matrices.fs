@@ -7,7 +7,8 @@ let multiply (m1:'t [,]) (m2:'t [,]) opMult opPlus =
     if m1.GetLength 1 = m2.GetLength 0
     then
         let res = Array2D.zeroCreate (m1.GetLength 0) (m2.GetLength 1)
-        Parallel.For(0, m1.GetLength 0, fun i ->
+        let _ =
+            Parallel.For(0, m1.GetLength 0, fun i ->
         //for i in 0..m1.GetLength 0 - 1 do
             for j in 0..m2.GetLength 1 - 1 do
                 for k in 0..m1.GetLength 1 - 1 do
@@ -42,7 +43,7 @@ let multBoolSparse mtx1 mtx2 =
     [|
         for (i,j) in mtx1 do
             for (k,l) in mtx2 do
-                if k = j then i,l
+                if k = j then yield i,l
     |] |> Array.distinct
 
 let multBoolSparseParallel mtx1 mtx2 =
@@ -50,13 +51,14 @@ let multBoolSparseParallel mtx1 mtx2 =
     |> Array.Parallel.map
         (fun (i,j) ->
             [|for (k,l) in mtx2 do
-                 if k = j then i,l|])
+                 if k = j then yield i,l|])
     |> Array.concat |> Array.distinct
 
 
 let multBoolSparseParallel2 (mtx1:HashSet<_>) mtx2 =
-    let res = new System.Collections.Concurrent.ConcurrentBag <_>()
-    Parallel.ForEach(mtx1, fun (i,j) ->
+    let res = new System.Collections.Concurrent.ConcurrentBag<_>()
+    let _ =
+        Parallel.ForEach(mtx1, fun (i,j) ->
             let r = new HashSet<_>()
             for (k,l) in mtx2 do
                 if k = j then r.Add((i,l))|> ignore

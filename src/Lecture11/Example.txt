@@ -1,0 +1,9 @@
+let [x] = x|y
+let [z] = [x]*a
+let [findRes] = findAll "yyxa" [z]
+
+print [findRes]
+
+let [findRes2] = findAll "ccyacbxacxyyawwxyabcbcbcbc" [z][z]*(b|c)*
+
+print [findRes2]
