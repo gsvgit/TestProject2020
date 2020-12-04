@@ -45,10 +45,12 @@ let processExpr vDict expr =
         let mtxNFA = Automata.nfaToMatrixNFA nfa
         Automata.epsClosure mtxNFA
     match expr with
-    | AST.FindAll (str, re) -> Lst(Automata.findAll (makeAtm re) (str.ToCharArray() |> List.ofArray))
+    | AST.FindAll (str, re) ->
+        Lst(Automata.findAll (makeAtm re) (str.ToCharArray() |> List.ofArray))
     | AST.IsAcceptable (str, re) ->
         Bool(Automata.accept (makeAtm re) (str.ToCharArray() |> List.ofArray))
-    | AST.RegExp re -> RE (processRegExp vDict re)
+    | AST.RegExp re ->
+        RE (processRegExp vDict re)
 
 let processStmt (vDict:Dictionary<_,_>) stmt =
     match stmt with

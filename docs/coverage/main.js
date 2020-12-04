@@ -222,12 +222,19 @@ for (i = 0, l = charts.length; i < l; i++) {
 
 var assemblies = [
   {
+    "name": "Lecture4",
+    "classes": [
+      { "name": "System.AssemblyVersionInformation", "rp": "Lecture4_AssemblyVersionInformation.htm", "cl": 0, "ucl": 0, "cal": 0, "tl": 0, "ct": "MethodCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [], "bch": [], "hc": [] },
+      { "name": "TestProj2020.Main", "rp": "Lecture4_Main.htm", "cl": 0, "ucl": 9, "cal": 9, "tl": 24, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 2, "lch": [], "bch": [], "hc": [] },
+      { "name": "TestProj2020.Sorts", "rp": "Lecture4_Sorts.htm", "cl": 19, "ucl": 1, "cal": 20, "tl": 35, "ct": "LineCoverage", "mc": "-", "cb": 10, "tb": 10, "lch": [], "bch": [], "hc": [] },
+    ]},
+  {
     "name": "TestProj2020",
     "classes": [
       { "name": "System.AssemblyVersionInformation", "rp": "TestProj2020_AssemblyVersionInformation.htm", "cl": 0, "ucl": 0, "cal": 0, "tl": 0, "ct": "MethodCoverage", "mc": "-", "cb": 0, "tb": 0, "lch": [], "bch": [], "hc": [] },
       { "name": "TestProj2020.Fib", "rp": "TestProj2020_Fib.htm", "cl": 0, "ucl": 30, "cal": 30, "tl": 66, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 28, "lch": [], "bch": [], "hc": [] },
       { "name": "TestProj2020.FSharpIntro", "rp": "TestProj2020_FSharpIntro.htm", "cl": 3, "ucl": 16, "cal": 19, "tl": 47, "ct": "LineCoverage", "mc": "-", "cb": 2, "tb": 16, "lch": [], "bch": [], "hc": [] },
-      { "name": "TestProj2020.Main", "rp": "TestProj2020_Main.htm", "cl": 0, "ucl": 10, "cal": 10, "tl": 23, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 2, "lch": [], "bch": [], "hc": [] },
+      { "name": "TestProj2020.Main", "rp": "TestProj2020_Main.htm", "cl": 0, "ucl": 10, "cal": 10, "tl": 24, "ct": "LineCoverage", "mc": "-", "cb": 0, "tb": 2, "lch": [], "bch": [], "hc": [] },
     ]},
 ];
 

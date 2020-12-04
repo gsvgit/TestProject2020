@@ -6,7 +6,9 @@ open FSharp.Text.Lexing
 let newline (lexbuf: LexBuffer<_>) =
   lexbuf.StartPos <- lexbuf.StartPos.NextLine
 
-let lexeme = LexBuffer<_>.LexemeString
+let lexeme x =
+    let s = LexBuffer<_>.LexemeString x
+    s.Substring(1, s.Length - 2)
 }
 
 // Regular expressions

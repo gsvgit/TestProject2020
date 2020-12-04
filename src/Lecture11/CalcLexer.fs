@@ -8,9 +8,11 @@ open FSharp.Text.Lexing
 let newline (lexbuf: LexBuffer<_>) =
   lexbuf.StartPos <- lexbuf.StartPos.NextLine
 
-let lexeme = LexBuffer<_>.LexemeString
+let lexeme x =
+    let s = LexBuffer<_>.LexemeString x
+    s.Substring(1, s.Length - 2)
 
-# 13 "CalcLexer.fs"
+# 15 "CalcLexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -121,94 +123,94 @@ let rec _fslex_dummy () = _fslex_dummy()
 and tokenStream  lexbuf =
   match _fslex_tables.Interpret(0,lexbuf) with
   | 0 -> ( 
-# 23 "CalcLexer.fsl"
+# 25 "CalcLexer.fsl"
                          CalcParser.SMB(char (lexbuf.Lexeme).[0]) 
-# 126 "CalcLexer.fs"
+# 128 "CalcLexer.fs"
           )
   | 1 -> ( 
-# 25 "CalcLexer.fsl"
+# 27 "CalcLexer.fsl"
                               tokenStream lexbuf 
-# 131 "CalcLexer.fs"
+# 133 "CalcLexer.fs"
           )
   | 2 -> ( 
-# 26 "CalcLexer.fsl"
+# 28 "CalcLexer.fsl"
                            tokenStream lexbuf 
-# 136 "CalcLexer.fs"
+# 138 "CalcLexer.fs"
           )
   | 3 -> ( 
-# 28 "CalcLexer.fsl"
+# 30 "CalcLexer.fsl"
                       CalcParser.LBR
-# 141 "CalcLexer.fs"
+# 143 "CalcLexer.fs"
           )
   | 4 -> ( 
-# 29 "CalcLexer.fsl"
+# 31 "CalcLexer.fsl"
                       CalcParser.RBR
-# 146 "CalcLexer.fs"
+# 148 "CalcLexer.fs"
           )
   | 5 -> ( 
-# 30 "CalcLexer.fsl"
+# 32 "CalcLexer.fsl"
                       CalcParser.STAR
-# 151 "CalcLexer.fs"
+# 153 "CalcLexer.fs"
           )
   | 6 -> ( 
-# 31 "CalcLexer.fsl"
+# 33 "CalcLexer.fsl"
                       CalcParser.ALT
-# 156 "CalcLexer.fs"
+# 158 "CalcLexer.fs"
           )
   | 7 -> ( 
-# 32 "CalcLexer.fsl"
+# 34 "CalcLexer.fsl"
                       CalcParser.OPT
-# 161 "CalcLexer.fs"
+# 163 "CalcLexer.fs"
           )
   | 8 -> ( 
-# 33 "CalcLexer.fsl"
+# 35 "CalcLexer.fsl"
                       CalcParser.AMP
-# 166 "CalcLexer.fs"
+# 168 "CalcLexer.fs"
           )
   | 9 -> ( 
-# 34 "CalcLexer.fsl"
+# 36 "CalcLexer.fsl"
                       CalcParser.EQ
-# 171 "CalcLexer.fs"
+# 173 "CalcLexer.fs"
           )
   | 10 -> ( 
-# 35 "CalcLexer.fsl"
+# 37 "CalcLexer.fsl"
                         CalcParser.VNAME(lexeme lexbuf)
-# 176 "CalcLexer.fs"
+# 178 "CalcLexer.fs"
           )
   | 11 -> ( 
-# 36 "CalcLexer.fsl"
+# 38 "CalcLexer.fsl"
                         CalcParser.KW_LET
-# 181 "CalcLexer.fs"
+# 183 "CalcLexer.fs"
           )
   | 12 -> ( 
-# 37 "CalcLexer.fsl"
+# 39 "CalcLexer.fsl"
                           CalcParser.KW_PRINT
-# 186 "CalcLexer.fs"
+# 188 "CalcLexer.fs"
           )
   | 13 -> ( 
-# 38 "CalcLexer.fsl"
+# 40 "CalcLexer.fsl"
                             CalcParser.KW_FIND_ALL
-# 191 "CalcLexer.fs"
+# 193 "CalcLexer.fs"
           )
   | 14 -> ( 
-# 39 "CalcLexer.fsl"
+# 41 "CalcLexer.fsl"
                                  CalcParser.KW_IS_ACCEPTABLE
-# 196 "CalcLexer.fs"
+# 198 "CalcLexer.fs"
           )
   | 15 -> ( 
-# 40 "CalcLexer.fsl"
+# 42 "CalcLexer.fsl"
                       CalcParser.STR(lexeme lexbuf)
-# 201 "CalcLexer.fs"
+# 203 "CalcLexer.fs"
           )
   | 16 -> ( 
-# 42 "CalcLexer.fsl"
+# 44 "CalcLexer.fsl"
                           failwith ("Lexer error. Unexpected symbol: " + LexBuffer<_>.LexemeString lexbuf) 
-# 206 "CalcLexer.fs"
+# 208 "CalcLexer.fs"
           )
   | 17 -> ( 
-# 43 "CalcLexer.fsl"
+# 45 "CalcLexer.fsl"
                           CalcParser.EOF 
-# 211 "CalcLexer.fs"
+# 213 "CalcLexer.fs"
           )
   | _ -> failwith "tokenStream"
 

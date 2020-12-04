@@ -2,7 +2,11 @@ let [x] = x|y
 let [z] = [x]*a
 let [findRes] = findAll "yyxa" [z]
 
+let [acc] = isAcceptable "yyxa" [z]
+
 print [findRes]
+
+print [acc]
 
 let [findRes2] = findAll "ccyacbxacxyyawwxyabcbcbcbc" [z][z]*(b|c)*
 
