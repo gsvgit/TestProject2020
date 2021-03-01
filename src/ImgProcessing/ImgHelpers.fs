@@ -4,13 +4,10 @@ open System.IO
 
 let loadAs2DArray (file:string) =
     let img = new Bitmap(file)
-    let converter = new ImageConverter();
-    //let a = converter.ConvertTo(img, typeof<byte[]>) :?> (byte[])
     let res = Array2D.zeroCreate img.Height img.Width
     for i in 0.. img.Height - 1 do
         for j in 0 .. img.Width - 1 do
             res.[i,j] <- img.GetPixel(j,i)
-    //a |> Array.iteri (fun i x -> res.[i / img.Width , i % img.Width] <- x)
     printfn "H=%A W=%A" img.Height img.Width
     res
 
