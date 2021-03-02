@@ -21,6 +21,12 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ImgHelpers.fs" />
     <Compile Include="Main.fs" />
+    <None Include="YC.OpenCL.NET.dll.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Brahma.FSharp" Version="2.0.0-alpha5" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>
