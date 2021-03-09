@@ -10,4 +10,7 @@
         <PackageReference Include="Avalonia.Desktop" Version="0.10.0" />
         <PackageReference Include="Avalonia.Diagnostics" Version="0.10.0" />
     </ItemGroup>
+    <ItemGroup>
+      <ProjectReference Include="..\Lecture11\Lecture11.fsproj" />
+    </ItemGroup>
 </Project>

@@ -1,6 +1,15 @@
 module Interpreter
 open System.Collections.Generic
 
+let private newDataToConsole = new Event<string>()
+
+let Printed = newDataToConsole.Publish
+
+let private runtimeException = new Event<string>()
+
+let NewRuntimeException = runtimeException.Publish
+
+
 type vType =
     | RE of Regexp.Regexp<char>
     | Bool of bool
@@ -13,11 +22,17 @@ let rec processRegExp (vDict:Dictionary<_,_>) re =
             try
                 vDict.[v]
             with
-            | _ -> failwithf "Variable %A is not declared." v
+            | _ ->
+                sprintf "Variable %A is not declared." v |> runtimeException.Trigger
+                failwith "Variable %A is not declared." v
         match data with
         | RE r -> r
-        | Bool _ -> failwithf "Variable %A has type bool, but regexp is expected." v
-        | Lst _ -> failwithf "Variable %A has type list, but regexp is expected." v
+        | Bool _ ->
+            sprintf "Variable %A has type bool, but regexp is expected." v |> runtimeException.Trigger
+            failwithf "Variable %A has type bool, but regexp is expected." v
+        | Lst _ ->
+            sprintf "Variable %A has type list, but regexp is expected." v |> runtimeException.Trigger
+            failwithf "Variable %A has type list, but regexp is expected." v
     | AST.RSmb s -> Regexp.RSmb s
     | AST.Alt(l, r) ->
         let l = processRegExp vDict l
@@ -59,11 +74,13 @@ let processStmt (vDict:Dictionary<_,_>) stmt =
             try
                 vDict.[v]
             with
-            | _ -> failwithf "Variable %A is not declared." v
+            | _ ->
+                sprintf "Variable %A is not declared." v |> runtimeException.Trigger
+                failwithf "Variable %A is not declared." v
         match data with
-        | RE r -> printfn "%A" r
-        | Bool b -> printfn "%A" b
-        | Lst l -> printfn "%A" l
+        | RE r -> sprintf "%A" r |> newDataToConsole.Trigger
+        | Bool b -> sprintf "%A" b |> newDataToConsole.Trigger
+        | Lst l -> sprintf "%A" l |> newDataToConsole.Trigger
     | AST.VDecl(v,e) ->
         if vDict.ContainsKey v
         then vDict.[v] <- processExpr vDict e
@@ -71,6 +88,7 @@ let processStmt (vDict:Dictionary<_,_>) stmt =
     vDict
 
 let run ast =
+
     let vDict = new Dictionary<_,_>()
     ast
     |> List.fold processStmt vDict

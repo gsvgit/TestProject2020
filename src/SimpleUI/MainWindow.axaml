@@ -11,9 +11,9 @@
                     DockPanel.Dock="Top"
                     Spacing="5"
                     Margin="3">
-            <Button Content="Copy" />
             <Button Name="openFileBtn" Content="Open File" />
-            <Button Name="clearControlBtn" Content="Clear Buttons" />
+            <Button Name="saveFileBtn" Content="Save File" />
+            <Button Name="runBtn" Content="Run" />
         </StackPanel>
         <Grid>
             <Grid.RowDefinitions>
@@ -40,13 +40,20 @@
                     <ColumnDefinition Width="0.35*" />
                 </Grid.ColumnDefinitions>
                 <Border BorderBrush="Gray" BorderThickness="1" Grid.Column="0">
-                    <TextBox AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Text="{Binding InputText}"/>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Name="executionStatus" Text="Console"/>
+                        <TextBox AcceptsReturn="True" ScrollViewer.VerticalScrollBarVisibility="Auto" Name="console" Grid.Row="2"/>
+                    </Grid>
                 </Border>
                 <GridSplitter Grid.Column="1" />
                 <Border BorderBrush="Gray" BorderThickness="1" Grid.Column="2">
-                    <TextBlock ScrollViewer.VerticalScrollBarVisibility="Auto" Text="{Binding OutputText}" />
+                    <TextBlock ScrollViewer.VerticalScrollBarVisibility="Auto" Name="outText" />
                 </Border>
-
             </Grid>
         </Grid>
     </DockPanel>

@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Platform;
@@ -13,6 +15,7 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Native;
 using Avalonia.Platform;
+using Avalonia.Threading;
 using AvaloniaEdit.CodeCompletion;
 using AvaloniaEdit.Document;
 using AvaloniaEdit.Editing;
@@ -29,10 +32,16 @@ namespace AvaloniaEdit.Demo
         private CompletionWindow _completionWindow;
         private OverloadInsightWindow _insightWindow;
         private Button _openFileBtn;
-        private Button _clearControlBtn;
+        private Button _saveFileBtn;
+        private readonly Button _runBtn;
+        private readonly TextBlock _outText;
+        private readonly TextBlock _executionStatus;
+        private readonly TextBox _console;
         private ElementGenerator _generator = new ElementGenerator();
 
-        private string CurrentFile = "";
+        private string _currentFile = "";
+
+        private bool isSuccessfulRun = true;
 
         public MainWindow()
         {
@@ -46,11 +55,22 @@ namespace AvaloniaEdit.Demo
             _textEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
             _textEditor.TextArea.IndentationStrategy = new Indentation.CSharp.CSharpIndentationStrategy();
 
+            _outText = this.FindControl<TextBlock>("outText");
+            _executionStatus = this.FindControl<TextBlock>("executionStatus");
+            _console = this.FindControl<TextBox>("console");
+            _console.IsReadOnly = true;
+            Interpreter.Printed.Subscribe(PrintToConsole);
+            Interpreter.NewRuntimeException.Subscribe(PrintErrorToConsole);
+
+
             _openFileBtn = this.FindControl<Button>("openFileBtn");
             _openFileBtn.Click += _openFileBtn_Click;
 
-            _clearControlBtn = this.FindControl<Button>("clearControlBtn");
-            _clearControlBtn.Click += _clearControlBtn_Click; ;
+            _saveFileBtn = this.FindControl<Button>("saveFileBtn");
+            _saveFileBtn.Click += SaveFileBtnClick; ;
+
+            _runBtn = this.FindControl<Button>("runBtn");
+            _runBtn.Click += RunBtnClick; ;
 
             _textEditor.TextArea.TextView.ElementGenerators.Add(_generator);
 
@@ -62,6 +82,51 @@ namespace AvaloniaEdit.Demo
             }, RoutingStrategies.Bubble, true);
         }
 
+        private void RunBtnClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        {
+            try
+            {
+                _runBtn.IsEnabled = false;
+                isSuccessfulRun = true;
+                _executionStatus.Background = Brushes.Yellow;
+                _console.Text = "Execution started:\n";
+                var code = this._textEditor.Text;
+                var ast = RegexpParser.parseRegexpFromString(code);
+                var task = new Task(() => Interpreter.run(ast));
+                task.ContinueWith(t =>
+                    Dispatcher.UIThread.Post(() =>
+                    {
+                        _runBtn.IsEnabled = true;
+                        if (isSuccessfulRun) _executionStatus.Background = Brushes.Green;
+                        _console.Text += "\n" + "Execution finished.";
+                    }));
+                task.Start();
+            }
+            catch (Exception exception)
+            {
+                _console.Text += exception.Message;
+                _console.Text += "\n" + "Execution finished.";
+                _executionStatus.Background = Brushes.Red;
+                _runBtn.IsEnabled = true;
+                isSuccessfulRun = false;
+            }
+
+        }
+
+        private void PrintToConsole(string msg)
+        {
+            Dispatcher.UIThread.Post(() =>
+                _console.Text = _console.Text + "\n" + msg);
+        }
+
+        private void PrintErrorToConsole(string msg)
+        {
+            Dispatcher.UIThread.Post(() =>
+            {
+                isSuccessfulRun = false;
+                _console.Text = _console.Text + "\n" + msg;
+                _executionStatus.Background = Brushes.Red;});
+        }
         private void InitializeComponent()
         {
             AvaloniaXamlLoader.Load(this);
@@ -75,16 +140,17 @@ namespace AvaloniaEdit.Demo
             if (path != null)
             {
                 var text = System.IO.File.ReadAllText(path[0]);
-                CurrentFile = path[0];
+                _currentFile = path[0];
                 _textEditor.Text = text;
             };
         }
 
-        void _clearControlBtn_Click(object sender, Avalonia.Interactivity.RoutedEventArgs e)
+        void SaveFileBtnClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
             //TODO: delete elements using back key
-            _generator.controls.Clear();
-            _textEditor.TextArea.TextView.Redraw();
+            //_generator.controls.Clear();
+            //_textEditor.TextArea.TextView.Redraw();
+            _outText.Text = "Saved!";
         }
 
         void textEditor_TextArea_TextEntering(object sender, TextInputEventArgs e)
