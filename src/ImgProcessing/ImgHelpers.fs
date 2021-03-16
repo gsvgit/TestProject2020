@@ -154,16 +154,13 @@ let applyFilter4 (provider:ComputeProvider) (commandQueue:CommandQueue) localWor
         <@
             fun (r:_1D) (img:array<_>) (filter:array<_>) (result:array<_>) ->
                 let p = r.GlobalID0
-                let localId = r.LocalID0
-
+                //let localId = r.LocalID0
                 let pw = p % imgW
                 let ph = p / imgW
 
-                let localFilter = localArray filterSize
-
-                if localId < filterSize then localFilter.[localId] <- filter.[localId]
-
-                barrier()
+                //let localFilter = localArray filterSize
+                //if localId < filterSize then localFilter.[localId] <- filter.[localId]
+                //barrier()
 
                 let mutable res = 0.0f
 
@@ -173,13 +170,15 @@ let applyFilter4 (provider:ComputeProvider) (commandQueue:CommandQueue) localWor
                         if i < 0 || i >= imgH || j < 0 || j >= imgW
                         then d <- img.[p]
                         else d <- img.[i * imgW + j]
-                        let f = localFilter.[(i - ph + filterD) * (2 * filterD + 1) + (j - pw + filterD)]
+                        let f = filter.[(i - ph + filterD) * (2 * filterD + 1) + (j - pw + filterD)]
                         res <- res + (float32 d) * f
-                result.[p] <- res
+                result.[p] <- byte (int res) // byte -2.0 .NET 253 // GPU 0
         @>
 
-    let str = ref ""
-    let kernel, kernelPrepare, kernelRun = provider.Compile command //(command, _options = CompileOptions.DisableOptimizations, _outCode = str, translatorOptions=[TranslatorOption.BoolAsBit])
+ //   let str = ref ""
+    let kernel, kernelPrepare, kernelRun =
+        provider.Compile (command)//, _options = CompileOptions.DisableOptimizations, _outCode = str, translatorOptions=[TranslatorOption.BoolAsBit])
+//    printfn "%A" !str
     let d = _1D(imgH * imgW, localWorkSize)
     let result' = Array.zeroCreate (imgH * imgW)
     let filter = Array.concat filter
@@ -189,20 +188,27 @@ let applyFilter4 (provider:ComputeProvider) (commandQueue:CommandQueue) localWor
     commandQueue.Add(kernelRun()) |> ignore
     let _ = commandQueue.Add(result'.ToHost provider).Finish()
 
-    Array.Parallel.iteri (fun x v -> result.[x / imgW, x % imgW] <- byte v) result'
+    Array.Parallel.iteri (fun x v -> result.[x / imgW, x % imgW] <-  v) result'
+
+
+    //result'.[0..10000] |> Seq.iter (printf "%A, ")
 
     provider.CloseAllBuffers()
+
+    //printf "%A" result
 
     result
 
 
-let applyFilters (provider:ComputeProvider) (commandQueue:CommandQueue) localWorkSize (filters: list<float32[][]>) (img: byte[,]) =
-    let imgH = img.GetLength 0
-    let imgW = img.GetLength 1
-    let img =
-            [| for x in 0 .. Array2D.length1 img - 1 do
-               yield! [| for y in 0 .. Array2D.length2 img - 1 -> img.[x, y] |]
-            |]
+let applyFilters (provider:ComputeProvider) (commandQueue:CommandQueue) localWorkSize (filters: list<float32[][]>) (inImg: byte[,]) =
+    let imgH = inImg.GetLength 0
+    let imgW = inImg.GetLength 1
+    let ingBufSize = imgH * imgW + (localWorkSize - imgH * imgW % localWorkSize)
+    let img = Array.zeroCreate ingBufSize
+    for x in 0 .. Array2D.length1 inImg - 1 do
+        for y in 0 .. Array2D.length2 inImg - 1 do
+            img.[x * imgW + y] <- inImg.[x, y]
+
 
     let applyFilter img (filter:'t[][]) =
         let filterD = (Array.length filter) / 2
@@ -214,16 +220,16 @@ let applyFilters (provider:ComputeProvider) (commandQueue:CommandQueue) localWor
             <@
                 fun (r:_1D) (img:array<_>) (filter:array<_>) (result:array<_>) ->
                     let p = r.GlobalID0
-                    //let localId = r.LocalID0
+                    let localId = r.LocalID0
 
                     let pw = p % imgW
                     let ph = p / imgW
 
-                    //let localFilter = localArray filterSize
+                    let localFilter = localArray filterSize
 
-                    //if localId < filterSize then localFilter.[localId] <- filter.[localId]
+                    if localId < filterSize then localFilter.[localId] <- filter.[localId]
 
-                    //barrier()
+                    barrier()
 
                     let mutable res = 0.0f
 
@@ -233,14 +239,14 @@ let applyFilters (provider:ComputeProvider) (commandQueue:CommandQueue) localWor
                             if i < 0 || i >= imgH || j < 0 || j >= imgW
                             then d <- img.[p]
                             else d <- img.[i * imgW + j]
-                            let f = filter.[(i - ph + filterD) * (2 * filterD + 1) + (j - pw + filterD)]
+                            let f = localFilter.[(i - ph + filterD) * (2 * filterD + 1) + (j - pw + filterD)]
                             res <- res + (float32 d) * f
-                    result.[p] <-  res
+                    result.[p] <-  byte (int res)
             @>
 
         let kernel, kernelPrepare, kernelRun = provider.Compile command
-        let d = _1D(imgH * imgW, localWorkSize)
-        let result' = Array.zeroCreate (imgH * imgW)
+        let d = _1D(ingBufSize, localWorkSize)
+        let result' = Array.zeroCreate (ingBufSize)
         kernelPrepare d img filter result'
 
         commandQueue.Add(kernelRun()) |> ignore
@@ -250,9 +256,9 @@ let applyFilters (provider:ComputeProvider) (commandQueue:CommandQueue) localWor
 
     let mutable res = img
     for filter in filters do
-        res <- applyFilter res filter |> Array.Parallel.map (byte)
+        res <- applyFilter res filter
     let result = Array2D.zeroCreate imgH imgW
-    Array.Parallel.iteri (fun x v -> result.[x / imgW, x % imgW] <- byte v) res
+    Array.Parallel.iteri (fun x v -> if x < imgH * imgW then result.[x / imgW, x % imgW] <- byte v) res
 
     provider.CloseAllBuffers()
 
