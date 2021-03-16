@@ -12,7 +12,9 @@ let loadAs2DArray (file:string) =
     let res = Array2D.zeroCreate img.Height img.Width
     for i in 0.. img.Height - 1 do
         for j in 0 .. img.Width - 1 do
-            res.[i,j] <- img.GetPixel(j,i)
+            res.[i,j] <-
+                let x = img.GetPixel(j,i)
+                (x.R + x.G + x.B) / 3uy
     printfn "H=%A W=%A" img.Height img.Width
     res
 

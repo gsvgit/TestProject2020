@@ -16,8 +16,8 @@ let processAllFiles inDir outDir filters =
     for file in (listAllFiles inDir) do
         printfn "%A" file
         let bArray = ImgHelpers.loadAs2DArray file
-        let grey = ImgHelpers.toGrayscale bArray
-        let res = filter grey
+        //let grey = ImgHelpers.toGrayscale bArray
+        let res = filter bArray
         ImgHelpers.save2DByteArrayAsImage res (outFile file)
 
 type msg =
@@ -45,36 +45,39 @@ let imgLoader inDir (imgProcessor:MailboxProcessor<_>) =
                     | file :: files ->
                         printfn "Load: %A" file
                         let bArray = ImgHelpers.loadAs2DArray file
-                        let grey = ImgHelpers.toGrayscale bArray
-                        imgProcessor.Post (Img (file,grey))
+                        //let grey = ImgHelpers.toGrayscale bArray
+                        imgProcessor.Post (Img (file,bArray))
                         inbox.Post (Go ch)
                         return! loop files
             }
         loop (listAllFiles inDir)
         )
 
-let imgProcessor filters (imgSaver:MailboxProcessor<_>) =
+let imgProcessor filters (imgSaver1:MailboxProcessor<_>) (imgSaver2:MailboxProcessor<_>) =
 
     let platform, queue = ImgHelpers.getCommandQueue "*NVIDIA*"
     let filter = ImgHelpers.applyFilters platform queue 64 filters
 
     MailboxProcessor.Start(fun inbox ->
-        let rec loop () =
+        let rec loop cnt =
             async{
                 let! msg = inbox.Receive()
                 match msg with
                 | EOS ch ->
                     printfn "Image processor is ready to finish!"
-                    imgSaver.PostAndReply (fun ch -> EOS ch)
+                    imgSaver1.PostAndReply (fun ch -> EOS ch)
+                    imgSaver2.PostAndReply (fun ch -> EOS ch)
                     printfn "Image processor is finished!"
                     ch.Reply()
                 | Img (file,img) ->
                     printfn "Filter: %A" file
                     let filtered = filter img
-                    imgSaver.Post (Img (file,filtered))
-                    return! loop ()
+                    if cnt
+                    then imgSaver1.Post (Img (file,filtered))
+                    else imgSaver2.Post (Img (file,filtered))
+                    return! loop (not cnt)
             }
-        loop ()
+        loop true
         )
 
 let imgSaver outDir =
@@ -98,7 +101,8 @@ let imgSaver outDir =
         )
 
 let processAllFilesAsync inDir outDir filters =
-    let imgSaver = imgSaver outDir
-    let imgProcessor = imgProcessor filters imgSaver
+    let imgSaver1 = imgSaver outDir
+    let imgSaver2 = imgSaver outDir
+    let imgProcessor = imgProcessor filters imgSaver1 imgSaver2
     let imgLoader = imgLoader inDir imgProcessor
     imgLoader.PostAndReply(fun ch -> Go ch)
