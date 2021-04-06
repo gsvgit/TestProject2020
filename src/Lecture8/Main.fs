@@ -4,6 +4,9 @@ open MyList
 open MyBinTree
 
 module Main =
+    open Lecture8
+    open LongArith
+
     open System
 
     [<EntryPoint>]
@@ -55,11 +58,11 @@ module Main =
 
         let arr = [|1; 2; 3|]
 
-        printfn "Array = %A" arr
+        //printfn "Array = %A" arr
 
         Array.iteri (fun j x -> arr.[j] <- x + 1) arr
 
-        printfn "Array iteri = %A" arr
+        //    printfn "Array iteri = %A" arr
 
         (*printfn "Array map = %A" (Array.map ((+)1) arr)
 
@@ -75,4 +78,54 @@ module Main =
 
         // printfn "Eval = %A" (eval tree)
 
+     (*   let r1 = LongArith.add (Pos, Singletone(9)) (Pos, Singletone(9))
+
+        printfn "%A" r1
+
+
+        let r2 = LongArith.mult (Pos, Singletone(9)) (Pos, Singletone(9))
+
+        printfn "%A" r2
+
+
+        let r2' = LongArith.add (Pos, Cons(1,Singletone(0))) (Neg, Singletone(1))
+
+        printfn "%A" r2'
+
+        let r3 = LongArith.mult r1 r2
+
+        printfn "%A" r3
+
+
+        let r4 = LongArith.substarct (Pos, Singletone 1) (Pos, Singletone 9)
+
+        printfn "%A" r4
+
+        let r5 = LongArith.substarct (Pos, Singletone 9) (Pos, Singletone 1)
+
+        printfn "%A" r5
+
+
+        let r5 = LongArith.substarct (Pos, Cons(9,Singletone 9)) (Pos, Singletone 2)
+
+        printfn "%A" r5
+
+        let r5 = LongArith.substarct (Pos, Singletone 2) (Pos, Cons(9,Singletone 9))
+
+        printfn "%A" r5
+
+        let r5 = LongArith.substarct (Neg, Singletone 2) (Pos, Cons(9,Singletone 9))
+
+        printfn "%A" r5
+*)
+        let r2 = LongArith.mult (Pos, Cons(3,Singletone 4)) (Pos, Singletone(3))
+
+        printfn "%A" r2
+
+       (* let r7 = LongArith.fromInt64 -20L
+        printfn "%A" r7
+
+        let r8 = LongArith.toInt64 (Neg, Cons(2,Singletone 2))
+        printfn "%A" r8
+*)
         0

@@ -5,12 +5,12 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <OutputType>Exe</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <AssemblyName>Lecture8</AssemblyName>
-    <RootNamespace>Lecture8</RootNamespace>
+    <AssemblyName>Lecture4</AssemblyName>
+    <RootNamespace>Lecture4</RootNamespace>
   </PropertyGroup>
   <PropertyGroup>
-    <Title>Lecture8</Title>
-    <Description>Stuff for lecture 8</Description>
+    <Title>Lecture4</Title>
+    <Description>Stuff for lecture 4</Description>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
     <Optimize>true</Optimize>
@@ -19,9 +19,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" />
-    <Compile Include="MyList.fs" />
-    <Compile Include="MyBinTree.fs" />
-    <Compile Include="LongArith.fs" />
+    <Compile Include="Parallel.fs" />
     <Compile Include="Main.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />

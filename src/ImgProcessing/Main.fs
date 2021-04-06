@@ -25,7 +25,7 @@ module Main =
         let img2 = "../../../Examples/nick-gavrilov-F-rvSJl6qI0-unsplash.jpg"
         let inDir = "../../../Examples/input"
         let outDir = "../../../Examples/output"
-        let filters = (List.init 4 (fun i -> ImgHelpers.gaussianBlurKernel) @ [ImgHelpers.edgesKernel])
+        let filters = (List.init 10 (fun i -> ImgHelpers.gaussianBlurKernel) @ [ImgHelpers.edgesKernel])
 
         (*let bArray = ImgHelpers.loadAs2DArray img1
         let grey = ImgHelpers.toGrayscale bArray

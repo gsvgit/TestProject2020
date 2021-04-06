@@ -84,6 +84,9 @@ namespace AvaloniaEdit.Demo
 
         private void RunBtnClick(object sender, Avalonia.Interactivity.RoutedEventArgs e)
         {
+            //var code = _textEditor.Text;
+            //var ast = RegexpParser.parseRegexpFromString(code);
+            //Interpreter.run(ast);
             try
             {
                 _runBtn.IsEnabled = false;
@@ -110,7 +113,6 @@ namespace AvaloniaEdit.Demo
                 _runBtn.IsEnabled = true;
                 isSuccessfulRun = false;
             }
-
         }
 
         private void PrintToConsole(string msg)
