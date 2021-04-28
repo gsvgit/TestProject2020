@@ -22,6 +22,7 @@
     <Compile Include="Automata.fs" />
     <Compile Include="Regexp.fs" />
     <Compile Include="Main.fs" />
+    <Compile Include="Interfaces.fs" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

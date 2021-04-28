@@ -21,6 +21,7 @@
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="ImgHelpers.fs" />
     <Compile Include="Streaming.fs" />
+    <Compile Include="Matrices.fs" />
     <Compile Include="Main.fs" />
     <None Include="YC.OpenCL.NET.dll.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

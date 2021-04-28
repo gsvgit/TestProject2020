@@ -19,8 +19,7 @@ module Main =
         let final = (System.DateTime.Now - start).TotalMilliseconds / 1000.0
         r,final
 
-    [<EntryPoint>]
-    let main (argv: string array) =
+    let imgPerf () =
         let img1 = "../../../Examples/sara-budhwani-h_P71-B8BPw-unsplash.jpg"
         let img2 = "../../../Examples/nick-gavrilov-F-rvSJl6qI0-unsplash.jpg"
         let inDir = "../../../Examples/input"
@@ -47,9 +46,22 @@ module Main =
             |> filter ImgHelpers.edgesKernel
 *)
         //let r,t = time r
-        //let _do () = ImgPorcessing.Streaming.processAllFiles inDir outDir filters
-        let _do () = ImgPorcessing.Streaming.processAllFilesAsync inDir outDir filters
+        let _do () = ImgPorcessing.Streaming.processAllFiles inDir outDir filters
+        //let _do () = ImgPorcessing.Streaming.processAllFilesAsync inDir outDir filters
         let t = time _do
         printfn "Execution time: %A seconds" t
         //ImgHelpers.save2DByteArrayAsImage r (img2 + "_out_blur_edg_10_gpu_2_br.jpg")
+
+    [<EntryPoint>]
+    let main (argv: string array) =
+        (*let platform, queue = Matrices.getCommandQueue "*Intel*"
+
+        let m1 = Matrices.getRandomMatrix 4096 4096
+        let m2 = Matrices.getRandomMatrix 4096 4096
+
+        let res, time = time (fun () -> Matrices.multiply platform queue 16 m1 m2)
+
+        printfn "Time: %A" time
+*)
+        imgPerf ()
         0
