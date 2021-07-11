@@ -1,6 +1,6 @@
 # TestProj2020
 
-[Enter useful description for TestProj2020]
+Demo project.
 
 ---
 
